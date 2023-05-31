@@ -1,0 +1,23 @@
+{
+  "name": "web_crawler_http",
+  "version": "1.0.0",
+  "description": "course url https://youtu.be/2JYT5f2isg4",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkalineW/web_crawler_http.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alkalineW/web_crawler_http/issues"
+  },
+  "homepage": "https://github.com/alkalineW/web_crawler_http#readme",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  }
+}
