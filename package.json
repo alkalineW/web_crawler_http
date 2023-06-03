@@ -19,5 +19,8 @@
   "homepage": "https://github.com/alkalineW/web_crawler_http#readme",
   "devDependencies": {
     "jest": "^29.5.0"
+  },
+  "dependencies": {
+    "jsdom": "^22.1.0"
   }
 }

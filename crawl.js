@@ -1,11 +1,39 @@
+const { JSDOM } = require('jsdom');
+
+function getUrlsfromHTML(htmlBody, baseURL) {
+  const urls = [];
+  const dom = new JSDOM(htmlBody);
+  const linkElements = dom.window.document.querySelectorAll('a'); // NodeList
+  // for .. of (iteriable object)
+  for (link of linkElements) {
+    // if baseURL excist and not equals to empty string and first alphabet of link ==='/'
+    if (baseURL && baseURL !== '' && link.href.slice(0, 1) === '/') {
+      // relative url
+      try {
+        // check if link.href is invalid
+        const urlObj = new URL(`${baseURL}${link.href}`);
+        urls.push(urlObj.href);
+      } catch (error) {
+        console.log(`error wwith relative url:${error.message}`);
+      }
+    } else {
+      // absolute url
+      try {
+        const urlObj = new URL(link.href);
+        urls.push(urlObj.href);
+      } catch (error) {
+        console.log(`error wwith absolute url:${error.message}`);
+      }
+    }
+  }
+  return urls;
+}
+
 function normalizeURL(urlString) {
   const urlObj = new URL(urlString);
   const hostPath = `${urlObj.hostname}${urlObj.pathname}`;
-
-  console.log(urlObj);
   if (urlString.length > 0 && urlString.slice(-1) === '/') {
-    console.log(hostPath.length - 1);
-    console.log(hostPath.slice(0, hostPath.length - 1));
+    // console.log(hostPath.slice(0, hostPath.length - 1));
     return hostPath.slice(0, hostPath.length - 1);
   } else {
     return hostPath;
@@ -15,4 +43,5 @@ function normalizeURL(urlString) {
 // export
 module.exports = {
   normalizeURL,
+  getUrlsfromHTML,
 };
