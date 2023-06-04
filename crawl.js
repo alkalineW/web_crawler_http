@@ -1,4 +1,34 @@
 const { JSDOM } = require('jsdom');
+// const fetch = require('node-fetch');
+
+async function crawlPage(currentURL) {
+  console.log(`${currentURL}`);
+  try {
+    const resp = await fetch(currentURL, { method: 'GET', mode: 'cors' });
+    const HTMLdata = await resp.text();
+    console.log(HTMLdata);
+    // 如果 resp.status 的值大於399(超過2xx 2xx表示成功)，則print error status 並 return(stop crawling)
+    if (resp.status > 399) {
+      console.error(
+        `error in fetch with status code:${resp.status} on page:${currentURL}`
+      );
+      return;
+    }
+    // ensure response get HTML back
+    const contentType = await resp.headers.get('content-type');
+    if (!contentType.includes('text/html')) {
+      console.error(
+        `none HTML response, content-type:${contentType} on page:${currentURL}`
+      );
+    }
+    // if (resp.headers. !== 'html') {
+
+    // }
+  } catch (error) {
+    console.error(`error in fetch:${error.message} , on page: ${currentURL}`);
+  }
+  // getUrlsfromHTML(HTMLdata);
+}
 
 function getUrlsfromHTML(htmlBody, baseURL) {
   const urls = [];
@@ -42,6 +72,7 @@ function normalizeURL(urlString) {
 
 // export
 module.exports = {
+  crawlPage,
   normalizeURL,
   getUrlsfromHTML,
 };
