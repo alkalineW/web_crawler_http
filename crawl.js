@@ -1,18 +1,37 @@
 const { JSDOM } = require('jsdom');
 // const fetch = require('node-fetch');
 
-async function crawlPage(currentURL) {
-  console.log(`${currentURL}`);
+async function crawlPage(baseURL, currentURL, pages) {
+  const baseURLObj = new URL(baseURL);
+  const currentURLObj = new URL(currentURL);
+
+  // if URL.hostname not the same,then return early
+  if (baseURLObj.hostname !== currentURLObj.hostname) {
+    return pages;
+  }
+
+  //---不太懂這段是什麼意思
+  const normalizeURLObj = normalizeURL(currentURL);
+
+  if (pages[normalizeURLObj] > 0) {
+    pages[normalizeURLObj]++;
+    return pages;
+  }
+  // initialize count to 1
+  pages[normalizeURLObj] = 1;
+  //---
+
+  pages[normalizeURLObj] = 1;
+
   try {
+    console.log(`actively crawling ${normalizeURLObj}`);
     const resp = await fetch(currentURL, { method: 'GET', mode: 'cors' });
-    const HTMLdata = await resp.text();
-    console.log(HTMLdata);
     // 如果 resp.status 的值大於399(超過2xx 2xx表示成功)，則print error status 並 return(stop crawling)
     if (resp.status > 399) {
       console.error(
         `error in fetch with status code:${resp.status} on page:${currentURL}`
       );
-      return;
+      return pages;
     }
     // ensure response get HTML back
     const contentType = await resp.headers.get('content-type');
@@ -20,14 +39,21 @@ async function crawlPage(currentURL) {
       console.error(
         `none HTML response, content-type:${contentType} on page:${currentURL}`
       );
+      return pages;
     }
-    // if (resp.headers. !== 'html') {
 
-    // }
+    const HTMLBody = await resp.text();
+    const nextURLstoCrawl = getUrlsfromHTML(HTMLBody, baseURL);
+
+    // recursively crawl all related pages
+    for (const nextURL of nextURLstoCrawl) {
+      pages = await crawlPage(baseURL, nextURL, pages);
+    }
   } catch (error) {
     console.error(`error in fetch:${error.message} , on page: ${currentURL}`);
   }
-  // getUrlsfromHTML(HTMLdata);
+  // when crawled all apges
+  return pages;
 }
 
 function getUrlsfromHTML(htmlBody, baseURL) {
