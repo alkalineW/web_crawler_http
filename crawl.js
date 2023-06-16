@@ -1,18 +1,35 @@
 const { JSDOM } = require('jsdom');
 // const fetch = require('node-fetch');
 
-async function crawlPage(currentURL) {
-  console.log(`${currentURL}`);
+async function crawlPage(baseURL, currentURL, pages) {
+  const baseURLObject = new URL(baseURL);
+  const currentURLObject = new URL(currentURL);
+
+  if (baseURLObject.hostname !== currentURLObject.hostname) {
+    return pages;
+  }
+
+  const normalizedCurrentURL = normalizeURL(currentURL);
+
+  // if already seen pages[url] increment the count of seen times of the page
+  if (pages[normalizedCurrentURL] > 0) {
+    pages[normalizedCurrentURL]++;
+    return pages;
+  }
+
+  // initialize the count
+  pages[normalizedCurrentURL] = 1;
+  console.log(`activity crawling:${currentURL}`);
+
   try {
     const resp = await fetch(currentURL, { method: 'GET', mode: 'cors' });
-    const HTMLdata = await resp.text();
-    console.log(HTMLdata);
+
     // 如果 resp.status 的值大於399(超過2xx 2xx表示成功)，則print error status 並 return(stop crawling)
     if (resp.status > 399) {
       console.error(
         `error in fetch with status code:${resp.status} on page:${currentURL}`
       );
-      return;
+      return pages;
     }
     // ensure response get HTML back
     const contentType = await resp.headers.get('content-type');
@@ -20,14 +37,19 @@ async function crawlPage(currentURL) {
       console.error(
         `none HTML response, content-type:${contentType} on page:${currentURL}`
       );
+      return pages;
     }
-    // if (resp.headers. !== 'html') {
 
-    // }
+    const htmlBody = await resp.text();
+    const nextURLs = getUrlsfromHTML(htmlBody, baseURL);
+
+    for (nextURL of nextURLs) {
+      pages = await crawlPage(baseURL, nextURL, pages);
+    }
   } catch (error) {
     console.error(`error in fetch:${error.message} , on page: ${currentURL}`);
   }
-  // getUrlsfromHTML(HTMLdata);
+  return pages;
 }
 
 function getUrlsfromHTML(htmlBody, baseURL) {
