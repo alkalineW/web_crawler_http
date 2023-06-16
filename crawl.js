@@ -66,7 +66,7 @@ function getUrlsfromHTML(htmlBody, baseURL) {
         const urlObj = new URL(`${baseURL}${link.href}`);
         urls.push(urlObj.href);
       } catch (error) {
-        console.log(`error wwith relative url:${error.message}`);
+        console.log(`error with relative url:${error.message}`);
       }
     } else {
       // absolute url
@@ -74,7 +74,7 @@ function getUrlsfromHTML(htmlBody, baseURL) {
         const urlObj = new URL(link.href);
         urls.push(urlObj.href);
       } catch (error) {
-        console.log(`error wwith absolute url:${error.message}`);
+        console.log(`error with absolute url:${error.message}`);
       }
     }
   }
