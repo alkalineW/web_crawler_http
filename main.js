@@ -1,4 +1,8 @@
 const { crawlPage } = require('./crawl.js');
+<<<<<<< HEAD
+=======
+const { printReport } = require('./report.js');
+>>>>>>> redo-and-finished
 async function main() {
   /*
     process.argv return a array
@@ -21,14 +25,12 @@ async function main() {
 
   console.log('start crawling');
 
-  // use baseURL for currentURL, empty object as parameter
-  // 宣告 pages(object type) 來裝整個 crawlPage function return的內容
+/* 
+use baseURL for currentURL, empty object as parameter
+宣告 pages(object type) 來裝整個 crawlPage function return的內容
+*/
   const pages = await crawlPage(baseURL, baseURL, {});
-  console.log(`pages type:${typeof pages}`);
-  // for in for object / for of array & iterable object
-  for (const page of Object.entries(pages)) {
-    console.log(page);
-  }
+  printReport(pages);
 }
 
 main();

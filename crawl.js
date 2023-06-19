@@ -2,26 +2,25 @@ const { JSDOM } = require('jsdom');
 // const fetch = require('node-fetch');
 
 async function crawlPage(baseURL, currentURL, pages) {
-  const baseURLObj = new URL(baseURL);
-  const currentURLObj = new URL(currentURL);
+  const baseURLObject = new URL(baseURL);
+  const currentURLObject = new URL(currentURL);
 
   // if URL.hostname not the same,then return early
-  if (baseURLObj.hostname !== currentURLObj.hostname) {
+  if (baseURLObject.hostname !== currentURLObject.hostname) {
     return pages;
   }
 
-  //---不太懂這段是什麼意思
-  const normalizeURLObj = normalizeURL(currentURL);
+  const normalizedCurrentURL = normalizeURL(currentURL);
 
-  if (pages[normalizeURLObj] > 0) {
-    pages[normalizeURLObj]++;
+  // if already seen pages[url], increment the count of seen times of the page
+  if (pages[normalizedCurrentURL] > 0) {
+    pages[normalizedCurrentURL]++;
     return pages;
   }
-  // initialize count to 1
-  pages[normalizeURLObj] = 1;
-  //---
 
-  pages[normalizeURLObj] = 1;
+  // initialize the count to 1
+  pages[normalizedCurrentURL] = 1;
+  console.log(`activity crawling:${currentURL}`);
 
   try {
     console.log(`actively crawling ${normalizeURLObj}`);
@@ -53,6 +52,7 @@ async function crawlPage(baseURL, currentURL, pages) {
     console.error(`error in fetch:${error.message} , on page: ${currentURL}`);
   }
   // when crawled all apges
+  redo - and - finished;
   return pages;
 }
 
@@ -70,7 +70,7 @@ function getUrlsfromHTML(htmlBody, baseURL) {
         const urlObj = new URL(`${baseURL}${link.href}`);
         urls.push(urlObj.href);
       } catch (error) {
-        console.log(`error wwith relative url:${error.message}`);
+        console.log(`error with relative url:${error.message}`);
       }
     } else {
       // absolute url
@@ -78,7 +78,7 @@ function getUrlsfromHTML(htmlBody, baseURL) {
         const urlObj = new URL(link.href);
         urls.push(urlObj.href);
       } catch (error) {
-        console.log(`error wwith absolute url:${error.message}`);
+        console.log(`error with absolute url:${error.message}`);
       }
     }
   }
